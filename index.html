@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Editable Resume Template</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1in;
+        }
+        body {
+            font-family: "Times New Roman", Times, serif, Arial, sans-serif;
+            color: #000;
+            background-color: #f2f4f7;
+            margin: 0;
+            padding: 10px;
+            font-size: 13pt;
+            line-height: 1.3;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+        .action-bar {
+            text-align: center;
+            margin-bottom: 20px;
+            background: #eef2f7;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        .btn {
+            background-color: #0275d8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background-color: #025aa5;
+        }
+        
+        .add-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        .add-btn:hover {
+            background-color: #218838;
+        }
+
+        .del-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 2px 6px;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin-left: 5px;
+            font-weight: bold;
+            line-height: 1;
+        }
+        .del-btn:hover {
+            background-color: #c82333;
+        }
+        
+        /* Editable styling */
+        [contenteditable="true"] {
+            background-color: #fffde7;
+            border: 1px dashed #d4af37;
+            padding: 1px 4px;
+            border-radius: 3px;
+            outline: none;
+        }
+        [contenteditable="true"]:focus {
+            background-color: #fff9c4;
+            border: 1px solid #fbc02d;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h2 {
+            font-size: 15pt;
+            margin: 5px 0;
+            font-weight: bold;
+        }
+        .header h1 {
+            font-size: 17pt;
+            margin: 5px 0;
+            text-transform: uppercase;
+        }
+        .contact-section {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .contact-info {
+            flex-grow: 1;
+            min-width: 200px;
+        }
+        .profile-pic-container {
+            width: 100px;
+            height: 120px;
+            border: 1px solid #000;
+            text-align: center;
+            overflow: hidden;
+            background: #eee;
+            position: relative;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .profile-pic-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .profile-pic-container input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        h3.section-title {
+            font-size: 13pt;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #000;
+            display: inline-block;
+            padding-bottom: 1px;
+        }
+
+        p {
+            margin: 6px 0;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 10px 0 5px 0;
+        }
+
+        table.resume-table {
+            width: 100%;
+            border-collapse: collapse !important;
+            font-size: 12pt;
+            min-width: 450px;
+        }
+        table.resume-table th, table.resume-table td {
+            border: 1px solid #000 !important;
+            padding: 6px 8px;
+            text-align: left;
+            vertical-align: middle;
+        }
+        table.resume-table th {
+            background-color: #f2f2f2 !important;
+        }
+
+        ul, ol {
+            margin: 5px 0 5px 20px;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 6px;
+        }
+
+        .personal-details-table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+        .personal-details-table td {
+            padding: 3px 0;
+            vertical-align: top;
+            border: none !important;
+            word-break: break-word;
+        }
+        .label-col {
+            width: 150px;
+        }
+        .colon-col {
+            width: 15px;
+            text-align: center;
+        }
+        
+        .signature-area {
+            margin-top: 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .signature-line {
+            border-top: 1px solid #000;
+            width: 150px;
+            margin-top: 35px;
+            padding-top: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .page-break {
+            page-break-before: always;
+            break-before: page;
+            margin-top: 40px;
+        }
+
+        @media print {
+            body {
+                background-color: #ffffff;
+                padding: 0;
+                font-size: 11pt;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                max-width: 100%;
+            }
+            .action-bar, .add-btn, .del-btn {
+                display: none !important;
+            }
+            [contenteditable="true"] {
+                background-color: transparent !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+            .profile-pic-container input[type="file"] {
+                display: none !important;
+            }
+            table.resume-table th {
+                background-color: #f2f2f2 !important;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="action-bar">
+        <p style="margin-bottom: 10px; font-weight: bold; color: #333;">Click yellow boxes to edit. Use buttons to add/delete rows.</p>
+        <button class="btn" onclick="window.print()"> Download PDF</button>
+    </div>
+
+    <!-- Header Section -->
+    <div class="header">
+        <h2>Resume</h2>
+        <h2 style="font-size: 12pt; font-weight: normal; margin: 2px 0;">of</h2>
+        <h1 contenteditable="true">MD XYZ</h1>
+    </div>
+
+    <div class="contact-section">
+        <div class="contact-info">
+            <h3 style="font-size: 12pt; margin: 0 0 6px 0; text-decoration: underline;">Contact Address</h3>
+            <p><strong>Mobile:</strong> <span contenteditable="true">01800-000000</span></p>
+            <p><strong>Email:</strong> <span contenteditable="true">xyz@gmail.com</span></p>
+        </div>
+        <div class="profile-pic-container" title="Click to change photo">
+            <img id="profileImage" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='120' fill='%23cccccc'><rect width='100%' height='100%'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23666666' font-size='12'>Photo</text></svg>" alt="Profile Photo">
+            <input type="file" accept="image/*" onchange="loadFile(event)">
+        </div>
+    </div>
+
+    <div>
+        <h3 class="section-title">Career Objectives:</h3>
+        <p contenteditable="true">​"A detail-oriented and dedicated banking professional seeking to leverage my operational skills and customer-centric approach in a dynamic financial institution, aiming to drive business growth and maintain high standards of banking services."</p>
+    </div>
+
+    <div>
+        <h3 class="section-title">Academic Career:</h3>
+        <div class="table-responsive">
+            <table class="resume-table" id="academicTable">
+                <thead>
+                    <tr>
+                        <th>Degree</th>
+                        <th>University/Board</th>
+                        <th>Subject</th>
+                        <th>Result</th>
+                        <th>Passing year</th>
+                        <th style="width: 40px; text-align: center;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span contenteditable="true">XYZ</span></td>
+                        <td><span contenteditable="true"> Xyz</span></td>
+                        <td><span contenteditable="true">Xyz</span></td>
+                        <td><span contenteditable="true">0.00</span></td>
+                        <td><span contenteditable="true">2000</span></td>
+                        <td style="text-align: center;"><button class="del-btn" onclick="deleteRow(this)">&times;</button></td>
+                    </tr>
+                    <tr>
+                        <td><span contenteditable="true">XYZ</span></td>
+                        <td><span contenteditable="true"> Xyz</span></td>
+                        <td><span contenteditable="true">Xyz</span></td>
+                        <td><span contenteditable="true">0.00</span></td>
+                        <td><span contenteditable="true">2000</span></td>
+                        <td style="text-align: center;"><button class="del-btn" onclick="deleteRow(this)">&times;</button></td>
+                    </tr>
+                    <tr>
+                        <td><span contenteditable="true">XYZ</span></td>
+                        <td><span contenteditable="true"> Xyz</span></td>
+                        <td><span contenteditable="true">Xyz</span></td>
+                        <td><span contenteditable="true">0.00</span></td>
+                        <td><span contenteditable="true">2000</span></td>
+                        <td style="text-align: center;"><button class="del-btn" onclick="deleteRow(this)">&times;</button></td>
+                    </tr>
+                    <tr>
+                        <td><span contenteditable="true">XYZ</span></td>
+                        <td><span contenteditable="true"> Xyz</span></td>
+                        <td><span contenteditable="true">Xyz</span></td>
+                        <td><span contenteditable="true">0.00</span></td>
+                        <td><span contenteditable="true">2000</span></td>
+                        <td style="text-align: center;"><button class="del-btn" onclick="deleteRow(this)">&times;</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <button class="add-btn" onclick="addAcademicRow()">+ Add Academic Row</button>
+    </div>
+
+    <div>
+        <h3 class="section-title">Communication Skills:</h3>
+        <ul id="commSkillList">
+            <li><span contenteditable="true">Interpersonal Skills: Excellent ability to build positive relationships with clients, colleagues, and management through a polite and helpful approach.</span> <button class="del-btn" onclick="deleteListItem(this)">&times;</button></li>
+            <li><span contenteditable="true">Team Collaboration: Highly comfortable and effective working in a team environment to achieve shared organizational goals.</span> <button class="del-btn" onclick="deleteListItem(this)">&times;</button></li>
+        </ul>
+        <button class="add-btn" onclick="addCommSkill()">+ Add Skill Point</button>
+
+        <div class="table-responsive" style="margin-top: 12px;">
+            <table class="resume-table" id="langTable">
+                <thead>
+                    <tr>
+                        <th>Language</th>
+                        <th>Read</th>
+                        <th>Write</th>
+                        <th>Speak</th>
+                        <th style="width: 40px; text-align: center;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span contenteditable="true">Bangla</span></td>
+                        <td><span contenteditable="true">Fluent</span></td>
+                        <td><span contenteditable="true">Fluent</span></td>
+                        <td><span contenteditable="true">Fluent</span></td>
+                        <td style="text-align: center;"><button class="del-btn" onclick="deleteRow(this)">&times;</button></td>
+                    </tr>
+                    <tr>
+                        <td><span contenteditable="true">English</span></td>
+                        <td><span contenteditable="true">Fluent</span></td>
+                        <td><span contenteditable="true">Good</span></td>
+                        <td><span contenteditable="true">Good</span></td>
+                        <td style="text-align: center;"><button class="del-btn" onclick="deleteRow(this)">&times;</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <button class="add-btn" onclick="addLangRow()">+ Add Language Row</button>
+    </div>
+
+    <!-- Second Page Starts Here -->
+    <div class="page-break">
+        <h3 class="section-title">Computer Skill:</h3>
+        <ul id="computerSkillList">
+            <li><span contenteditable="true">Office Suite: Expert in MS Word, Excel, PowerPoint, and Google Workspace.</span> <button class="del-btn" onclick="deleteListItem(this)">&times;</button></li>
+            <li><span contenteditable="true">Data Management: Proficient in data entry, spreadsheet management, and report generation.</span> <button class="del-btn" onclick="deleteListItem(this)">&times;</button></li>
+    <li><span contenteditable="true">Internet & Communications: Skilled in online research, email correspondence, and virtual collaboration tools (Zoom, Google Meet, Teams).</span> <button class="del-btn" onclick="deleteListItem(this)">&times;</button></li>
+    </ul>
+        <button class="add-btn" onclick="addComputerSkill()">+ Add Computer Skill</button>
+    </div>
+
+    <div>
+        <h3 class="section-title">Job Experience:</h3>
+        <ol id="jobExpList" style="margin-left: 20px;">
+            <li><span contenteditable="true">I worked as a Store Keeper for S. Alam Group from 15 April 2012 to 30 March 2017.</span> <button class="del-btn" onclick="deleteListItem(this)">&times;</button></li>
+            <li><span contenteditable="true">I worked in the Packing Section at DAF Ctg Accessories Ltd from 1 January 2020 to 30 June 2020.</span> <button class="del-btn" onclick="deleteListItem(this)">&times;</button></li>
+            <li><span contenteditable="true">I worked as a Junior Officer at Islami Bank Bangladesh PLC from 5 August 2020 to 5 October 2025.</span> <button class="del-btn" onclick="deleteListItem(this)">&times;</button></li>
+        </ol>
+        <button class="add-btn" onclick="addJobExp()">+ Add Experience</button>
+    </div>
+
+    <div>
+        <h3 class="section-title">Personal Details:</h3>
+        <table class="personal-details-table">
+            <tr>
+                <td class="label-col">Father Name</td>
+                <td class="colon-col">:</td>
+                <td contenteditable="true">Md. Xyz</td>
+            </tr>
+            <tr>
+                <td class="label-col">Mother Name</td>
+                <td class="colon-col">:</td>
+                <td contenteditable="true">Xyz</td>
+            </tr>
+            <tr>
+                <td class="label-col">Date of birth</td>
+                <td class="colon-col">:</td>
+                <td contenteditable="true">/00/0000</td>
+            </tr>
+            <tr>
+                <td class="label-col">Nationality</td>
+                <td class="colon-col">:</td>
+                <td contenteditable="true">Bangla</td>
+            </tr>
+            <tr>
+                <td class="label-col">Religion</td>
+                <td class="colon-col">:</td>
+                <td contenteditable="true">Islam</td>
+            </tr>
+            <tr>
+                <td class="label-col">Blood Group</td>
+                <td class="colon-col">:</td>
+                <td contenteditable="true">O+ (Positive)</td>
+            </tr>
+            <tr>
+                <td class="label-col">Sex</td>
+                <td class="colon-col">:</td>
+                <td contenteditable="true">Male</td>
+            </tr>
+            <tr>
+                <td class="label-col">Marital Status</td>
+                <td class="colon-col">:</td>
+                <td contenteditable="true">Married</td>
+            </tr>
+            <tr>
+                <td class="label-col">Mobile No</td>
+                <td class="colon-col">:</td>
+                <td contenteditable="true">01800-000000</td>
+            </tr>
+            <tr>
+                <td class="label-col">Present Address</td>
+                <td class="colon-col">:</td>
+                <td>Vill: <span contenteditable="true">Xyz</span>, Ward No: <span contenteditable="true">00</span>, P.O: <span contenteditable="true">Xyz</span>, P.S: <span contenteditable="true">Xyz</span>, Dist: <span contenteditable="true">Xyz</span></td>
+            </tr>
+            <tr>
+                <td class="label-col">Permanent address</td>
+                <td class="colon-col">:</td>
+                <td>Vill: <span contenteditable="true">Xyz</span>, Ward No: <span contenteditable="true">00</span>, P.O: <span contenteditable="true">Xyz</span>, P.S: <span contenteditable="true">Xyz</span>, Dist: <span contenteditable="true">Xyz</span></td>
+            </tr>
+        </table>
+    </div>
+
+    <p style="margin-top: 20px;" contenteditable="true">I hereby declare that all the information provided above is true and correct to the best of my knowledge and belief.</p>
+
+    <div class="signature-area">
+        <div>
+            <p>Dated : <span contenteditable="true">[Date]</span></p>
+        </div>
+        <div class="signature-box">
+            <div class="signature-line">Signature</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function loadFile(event) {
+        var image = document.getElementById('profileImage');
+        image.src = URL.createObjectURL(event.target.files[0]);
+    }
+
+    function addAcademicRow() {
+        var table = document.getElementById("academicTable").getElementsByTagName('tbody')[0];
+        var newRow = table.insertRow();
+        newRow.innerHTML = `
+            <td><span contenteditable="true">[Degree]</span></td>
+            <td><span contenteditable="true">[Board/University]</span></td>
+            <td><span contenteditable="true">[Subject]</span></td>
+            <td><span contenteditable="true">[Result]</span></td>
+            <td><span contenteditable="true">[Year]</span></td>
+            <td style="text-align: center;"><button class="del-btn" onclick="deleteRow(this)">&times;</button></td>
+        `;
+    }
+
+    function addCommSkill() {
+        var list = document.getElementById("commSkillList");
+        var newItem = document.createElement("li");
+        newItem.innerHTML = `<span contenteditable="true">[New skill point...]</span> <button class="del-btn" onclick="deleteListItem(this)">&times;</button>`;
+        list.appendChild(newItem);
+    }
+
+    function addLangRow() {
+        var table = document.getElementById("langTable").getElementsByTagName('tbody')[0];
+        var newRow = table.insertRow();
+        newRow.innerHTML = `
+            <td><span contenteditable="true">[Language]</span></td>
+            <td><span contenteditable="true">[Read]</span></td>
+            <td><span contenteditable="true">[Write]</span></td>
+            <td><span contenteditable="true">[Speak]</span></td>
+            <td style="text-align: center;"><button class="del-btn" onclick="deleteRow(this)">&times;</button></td>
+        `;
+    }
+
+    function addComputerSkill() {
+        var list = document.getElementById("computerSkillList");
+        var newItem = document.createElement("li");
+        newItem.innerHTML = `<span contenteditable="true">[Computer Skill]</span> <button class="del-btn" onclick="deleteListItem(this)">&times;</button>`;
+        list.appendChild(newItem);
+    }
+
+    function addJobExp() {
+        var list = document.getElementById("jobExpList");
+        var newItem = document.createElement("li");
+        newItem.innerHTML = `<span contenteditable="true">[Job Experience details...]</span> <button class="del-btn" onclick="deleteListItem(this)">&times;</button>`;
+        list.appendChild(newItem);
+    }
+
+    function deleteRow(btn) {
+        var row = btn.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+    }
+
+    function deleteListItem(btn) {
+        var item = btn.parentNode;
+        item.parentNode.removeChild(item);
+    }
+</script>
+
+</body>
+</html>
