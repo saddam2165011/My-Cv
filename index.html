@@ -155,7 +155,6 @@
             display: inline-block;
             padding-bottom: 1px;
         }
-
         p {
             margin: 6px 0;
         }
@@ -258,6 +257,12 @@
                 background-color: #f2f2f2 !important;
                 -webkit-print-color-adjust: exact;
             }
+            /* Hide only the Action column when printing/downloading as PDF */
+            table.resume-table th:last-child,
+            table.resume-table td:last-child {
+                display: none !important;
+            }
+
         }
     </style>
 </head>
@@ -292,7 +297,6 @@
         <h3 class="section-title">Career Objectives:</h3>
         <p contenteditable="true">​"A detail-oriented and dedicated banking professional seeking to leverage my operational skills and customer-centric approach in a dynamic financial institution, aiming to drive business growth and maintain high standards of banking services."</p>
     </div>
-
     <div>
         <h3 class="section-title">Academic Career:</h3>
         <div class="table-responsive">
@@ -406,7 +410,6 @@
         </ol>
         <button class="add-btn" onclick="addJobExp()">+ Add Experience</button>
     </div>
-
     <div>
         <h3 class="section-title">Personal Details:</h3>
         <table class="personal-details-table">
